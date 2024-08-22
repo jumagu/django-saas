@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }}- {{ block.super }}{% endblock title %}
+
+{% block content %}
+  <h1>{{ page_title }}</h1>
+
+  <p>
+    {{ request.user }} - {{ request.method }} -
+    {{request.user.is_authenticated }}
+  </p>
+
+  {% include 'snippets/welcome-user-msg.html' %}
+
+  <p>Page visits: {{ page_visits_count }}</p>
+  <p>Total visits: {{ total_visits_count }}</p>
+  <p>Percent: {{ percent }}</p>
+{% endblock content %}
