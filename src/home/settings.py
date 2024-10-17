@@ -17,17 +17,17 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 ## Email config
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = config("EMAIL_HOST", cast=str, default="smtp.gmail.com")
-EMAIL_PORT = config("EMAIL_PORT", cast=str, default="587") # Recommended
-EMAIL_HOST_USER = config("EMAIL_HOST_USER", cast=str, default=None)
-EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", cast=str, default=None)
-EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool, default=True)
-EMAIL_USE_SSL = config("EMAIL_USE_SSL", cast=bool, default=False)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST', cast=str, default='smtp.gmail.com')
+EMAIL_PORT = config('EMAIL_PORT', cast=str, default='587') # Recommended
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', cast=str, default=None)
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', cast=str, default=None)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool, default=True)
+EMAIL_USE_SSL = config('EMAIL_USE_SSL', cast=bool, default=False)
 
 # 500 errors
-ADMIN_USER_NAME = config("ADMIN_USER_NAME", default="Admin user")
-ADMIN_USER_EMAIL = config("ADMIN_USER_EMAIL", default=None)
+ADMIN_USER_NAME = config('ADMIN_USER_NAME', default='Admin user')
+ADMIN_USER_EMAIL = config('ADMIN_USER_EMAIL', default=None)
 
 ADMINS = []
 MANAGERS = []
@@ -41,19 +41,19 @@ if all([ADMIN_USER_NAME, ADMIN_USER_EMAIL]):
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config("DJANGO_SECRET_KEY")
+SECRET_KEY = config('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = str(os.environ.get("DJANGO_DEBUG")).lower() == "true"
-DEBUG = config("DJANGO_DEBUG", cast=bool)
+# DEBUG = str(os.environ.get('DJANGO_DEBUG')).lower() == 'true'
+DEBUG = config('DJANGO_DEBUG', cast=bool)
 
 ALLOWED_HOSTS = [
-    ".railway.app", # https://saas.prod.railway.app
+    '.railway.app', # https://saas.prod.railway.app
 ]
 if DEBUG:
     ALLOWED_HOSTS += [
-        "127.0.0.1",
-        "localhost",
+        '127.0.0.1',
+        'localhost',
     ]
 
 
@@ -68,12 +68,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # my-apps
-    "commando",
+    'commando',
     'visits',
     # third-party-apps
+    'allauth_ui',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'allauth.socialaccount.providers.github',
+    'widget_tweaks',
+    'slippers',
 ]
 
 MIDDLEWARE = [
@@ -93,7 +97,7 @@ ROOT_URLCONF = 'home.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "templates"],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -119,8 +123,8 @@ DATABASES = {
     }
 }
 
-CONN_MAX_AGE = config("CONN_MAX_AGE", cast=int, default=300)
-DATABASE_URL = config("DATABASE_URL", default=None)
+CONN_MAX_AGE = config('CONN_MAX_AGE', cast=int, default=300)
+DATABASE_URL = config('DATABASE_URL', default=None)
 
 if DATABASE_URL is not None:
     import dj_database_url
@@ -151,10 +155,10 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Django AllAuth Config
-LOGIN_REDIRECT_URL= "/"
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-# ACCOUNT_EMAIL_SUBJECT_PREFIX = "[SaaS]"
+LOGIN_REDIRECT_URL= '/'
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+# ACCOUNT_EMAIL_SUBJECT_PREFIX = '[SaaS]'
 ACCOUNT_EMAIL_REQUIRED = True
 
 AUTHENTICATION_BACKENDS = [
@@ -164,7 +168,14 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-SOCIALACCOUNT_PROVIDERS = {}
+SOCIALACCOUNT_PROVIDERS = {
+    'github':{
+        'VERIFIED_EMAIL': True,
+    }
+}
+
+# Django AllAuth Theme
+ALLAUTH_UI_THEME = 'dark'
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -182,9 +193,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_BASE_DIR = BASE_DIR / "staticfiles"
+STATICFILES_BASE_DIR = BASE_DIR / 'staticfiles'
 STATICFILES_BASE_DIR.mkdir(exist_ok=True, parents=True)
-STATICFILES_VENDOR_DIR = STATICFILES_BASE_DIR / "vendors"
+STATICFILES_VENDOR_DIR = STATICFILES_BASE_DIR / 'vendors'
 
 # Source(s) for python manage.py collectstatic
 STATICFILES_DIRS = [
@@ -192,13 +203,13 @@ STATICFILES_DIRS = [
 ]
 
 # Output for python manage.py collectstatic
-STATIC_ROOT = BASE_DIR / "local-cdn"
+STATIC_ROOT = BASE_DIR / 'local-cdn'
 # < django 4.2
-# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 STORAGES = {
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
     },
 }
 
