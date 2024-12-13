@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Princing - {{ block.super }}{% endblock title %}
+
+{% block content %}
+<section>
+  <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
+    <div class="mx-auto max-w-screen-md text-center mb-8 lg:mb-12">
+      <h2
+        class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white"
+      >
+        Designed for business teams like yours
+      </h2>
+      <p class="mb-5 font-light text-gray-500 sm:text-xl dark:text-gray-400">
+        Here at SaaS we focus on markets where technology, innovation, and
+        capital can unlock long-term value and drive economic growth.
+      </p>
+    </div>
+    <div role="tablist" class="tabs tabs-boxed w-fit mx-auto mb-5">
+      <a
+        href="{{ url_mo }}"
+        role="tab"
+        class="tab w-fit {% if active == 'month' %}tab-active{% endif %}"
+        >Monthly</a
+      >
+      <a
+        href="{{ url_yr }}"
+        role="tab"
+        class="tab w-fit {% if active == 'year' %}tab-active{% endif %}"
+        >Yearly</a
+      >
+    </div>
+    <div
+      class="space-y-8 lg:grid lg:grid-cols-3 sm:gap-6 xl:gap-10 lg:space-y-0"
+    >
+      <!-- Pricing Cards -->
+      {% for price_obj in object_list %} 
+        {% include 'subscriptions/snippets/pricing-card.html' with object=price_obj %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock content %}

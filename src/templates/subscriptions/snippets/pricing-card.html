@@ -1,0 +1,27 @@
+<div class="card bg-base-300 shadow-md">
+  <div class="card-body">
+    <h3 class="mb-4 text-2xl font-semibold text-center">
+      {{ object.display_sub_name }}
+    </h3>
+    {% if object.display_sub_subtitle %}
+    <p class="font-light text-center text-gray-500 sm:text-lg">
+      {{ object.display_sub_subtitle }}
+    </p>
+    {% endif %}
+    <div class="flex justify-center items-baseline my-8">
+      <span class="mr-2 text-5xl font-extrabold">${{ object.price }}</span>
+      <span class="text-gray-500"> /{{ object.interval }} </span>
+    </div>
+    <!-- List -->
+    <ul role="list" class="mb-8 space-y-4 text-left">
+      {% for feature in object.display_feature_list %}
+      <li class="flex items-center space-x-3">
+        <!-- Icon -->
+        {% include 'icons/check-icon.html' %}
+        <span>{{ feature }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    <a href="#" class="btn btn-primary">Get started</a>
+  </div>
+</div>

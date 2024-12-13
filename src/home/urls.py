@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 from auth import views as auth_views
+from subscriptions import views as subscription_views
 from .views import (
     home_view,
     about_view,
@@ -28,8 +29,8 @@ from .views import (
 
 urlpatterns = [
     path('', home_view, name='home'),
-    path('login/', auth_views.login_view),
-    path('register/', auth_views.register_view),
+    # path('login/', auth_views.login_view),
+    # path('register/', auth_views.register_view),
     path('about/', about_view),
     path('hello-world/', home_view),
     path('accounts/', include('allauth.urls')),
@@ -38,4 +39,6 @@ urlpatterns = [
     path('protected/staff-only', staff_only_view),
     path('profiles/', include('profiles.urls')),
     path('admin/', admin.site.urls),
+    path('pricing/', subscription_views.subscription_price_view, name='pricing'),
+    path('pricing/<str:interval>/', subscription_views.subscription_price_view, name='pricing_interval'),
 ]
