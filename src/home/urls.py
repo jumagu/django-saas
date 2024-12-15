@@ -17,7 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from auth import views as auth_views
+# from auth import views as auth_views
+from checkouts import views as checkout_views
 from subscriptions import views as subscription_views
 from .views import (
     home_view,
@@ -41,4 +42,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('pricing/', subscription_views.subscription_price_view, name='pricing'),
     path('pricing/<str:interval>/', subscription_views.subscription_price_view, name='pricing_interval'),
+    path('checkout/sub-price/<int:price_id>/', checkout_views.product_price_redirect_view, name='sub_price_checkout'),
+    path('checkout/start/', checkout_views.checkout_redirect_view, name='stripe_checkout_start'),
+    path('checkout/success/', checkout_views.checkout_finalize_view, name='stripe_checkout_end'),
 ]
