@@ -44,7 +44,7 @@ def checkout_redirect_view(request):
 
 def checkout_finalize_view(request):
     session_id = request.GET.get('session_id')
-    customer_id, plan_id = helpers.billing.get_checkout_customer_plan(session_id)
+    customer_id, plan_id, sub_stripe_id = helpers.billing.get_checkout_customer_plan(session_id)
     
     try:
         sub_obj = Subscription.objects.get(subscriptionprice__stripe_id=plan_id)
@@ -57,12 +57,20 @@ def checkout_finalize_view(request):
         user_obj = None
     
     _user_sub_exists = False
+    updated_sub_options = {
+        'subscription': sub_obj,
+        'stripe_id': sub_stripe_id,
+        'user_cancelled': False,
+    }
     
     try:
         _user_sub_obj = UserSubscription.objects.get(user=user_obj)
         _user_sub_exists = True
     except UserSubscription.DoesNotExist:
-        _user_sub_obj = UserSubscription.objects.create(user=user_obj, subscription=sub_obj)
+        _user_sub_obj = UserSubscription.objects.create(
+            user=user_obj,
+            **updated_sub_options
+        )
     except:
         _user_sub_obj = None
     
@@ -70,9 +78,20 @@ def checkout_finalize_view(request):
         return HttpResponseBadRequest('There was an error with your account, please contact us')
     
     if _user_sub_exists:
-        # cancel old subs
-        # assing new sub
-        _user_sub_obj.subscription = sub_obj
+        # cancel old sub
+        old_stripe_id = _user_sub_obj.stripe_id
+        same_stripe_id = sub_stripe_id == old_stripe_id
+        if old_stripe_id is not None and not same_stripe_id: # Do not cancel current subsciption (may happen if user refreshs success page)
+            try:
+                helpers.billing.cancel_subscription(
+                    old_stripe_id,
+                    reason='Auto ended, new membership',
+                )
+            except:
+                pass
+        # assign new sub
+        for k, v in updated_sub_options.items():
+            setattr(_user_sub_obj, k, v)
         _user_sub_obj.save()
     
     context = {}
