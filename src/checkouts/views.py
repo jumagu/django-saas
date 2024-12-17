@@ -44,7 +44,11 @@ def checkout_redirect_view(request):
 
 def checkout_finalize_view(request):
     session_id = request.GET.get('session_id')
-    customer_id, plan_id, sub_stripe_id = helpers.billing.get_checkout_customer_plan(session_id)
+    checkout_data = helpers.billing.get_checkout_customer_plan(session_id)
+    customer_id = checkout_data.pop('customer_id');
+    plan_id = checkout_data.pop('plan_id');
+    sub_stripe_id = checkout_data.pop('sub_stripe_id');
+    subscription_data = {**checkout_data}
     
     try:
         sub_obj = Subscription.objects.get(subscriptionprice__stripe_id=plan_id)
@@ -61,6 +65,7 @@ def checkout_finalize_view(request):
         'subscription': sub_obj,
         'stripe_id': sub_stripe_id,
         'user_cancelled': False,
+        **subscription_data,
     }
     
     try:
