@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
 import helpers.billing
+from subscriptions import utils as subs_utils
 from subscriptions.models import SubscriptionPrice, UserSubscription
 
 # show details of the user subscription
@@ -12,12 +13,20 @@ def user_subscription_view(request):
     user_sub_obj, created = UserSubscription.objects.get_or_create(user=request.user)
     # sub_data = user_sub_obj.serialize()
     if request.method == 'POST':
-        if user_sub_obj.stripe_id:
-            sub_data = helpers.billing.get_subscription(user_sub_obj.stripe_id)
-            for k, v in sub_data.items():
-                setattr(user_sub_obj, k, v)
-            user_sub_obj.save()
-            messages.success(request, 'Your plan details have been refreshed.')
+        finished = subs_utils.refresh_active_users_subscriptions(
+            user_ids=[request.user.id],
+            active_only=False,
+        )
+        if finished:
+            messages.success(
+                request,
+                'Your plan details have been refreshed.'
+            )
+        else:
+            messages.error(
+                request,
+                'Your plan details have not been refreshed, please try again.'
+            )
         return redirect(user_sub_obj.get_absolute_url())
     context = {
         'subscription': user_sub_obj,
@@ -32,6 +41,7 @@ def user_subscription_cancel_view(request):
             sub_data = helpers.billing.cancel_subscription(
                 user_sub_obj.stripe_id,
                 reason='User wanted to end',
+                cancel_at_period_end=True,
             )
             for k, v in sub_data.items():
                 setattr(user_sub_obj, k, v)
