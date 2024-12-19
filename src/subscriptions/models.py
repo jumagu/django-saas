@@ -1,7 +1,9 @@
+import datetime
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
 from django.db.models import Q
+from django.utils import timezone
 from django.db.models.signals import post_save
 from django.contrib.auth.models import Group, Permission
 import helpers.billing
@@ -161,6 +163,37 @@ class SubscriptionStatus(models.TextChoices):
     PAUSED = 'paused', 'Paused'
 
 class UserSubscriptionQuerySet(models.QuerySet):
+    def by_days_range(self, days_start=7, days_end=120):
+        now = timezone.now()
+        days_start_from_now = now + datetime.timedelta(days=days_start)
+        days_end_from_now = now + datetime.timedelta(days=days_end)
+        range_start = days_start_from_now.replace(hour=0, minute=0, second=0, microsecond=0)
+        range_end = days_end_from_now.replace(hour=23, minute=59, second=59, microsecond=59)
+        return self.filter(
+            current_period_end__gte=range_start,
+            current_period_end__lte=range_end,
+        )
+    
+    def by_days_left(self, days_left=7):
+        now = timezone.now()
+        in_n_days = now + datetime.timedelta(days=days_left)
+        day_start = in_n_days.replace(hour=0, minute=0, second=0, microsecond=0)
+        day_end = in_n_days.replace(hour=23, minute=59, second=59, microsecond=59)
+        return self.filter(
+            current_period_end__gte=day_start,
+            current_period_end__lte=day_end,
+        )
+    
+    def by_days_ago(self, days_ago=3):
+        now = timezone.now()
+        in_n_days = now - datetime.timedelta(days=days_ago)
+        day_start = in_n_days.replace(hour=0, minute=0, second=0, microsecond=0)
+        day_end = in_n_days.replace(hour=23, minute=59, second=59, microsecond=59)
+        return self.filter(
+            current_period_end__gte=day_start,
+            current_period_end__lte=day_end,
+        )
+    
     def by_active_trialing(self):
         active_qs_lookup = (
             Q(status=SubscriptionStatus.ACTIVE) |
