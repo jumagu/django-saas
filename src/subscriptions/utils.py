@@ -2,7 +2,15 @@ import helpers.billing
 from customers.models import Customer
 from subscriptions.models import Subscription, UserSubscription, SubscriptionStatus
 
-def refresh_active_users_subscriptions(user_ids=None, active_only=True, verbose=False):
+def refresh_active_users_subscriptions(
+    user_ids=None,
+    active_only=True,
+    days_left=0,
+    days_ago=0,
+    days_start=0,
+    days_end=0,
+    verbose=False,
+):
     qs = UserSubscription.objects.all()
     
     if active_only:
@@ -10,6 +18,15 @@ def refresh_active_users_subscriptions(user_ids=None, active_only=True, verbose=
     
     if user_ids is not None:
         qs = qs.by_user_ids(user_ids=user_ids)
+    
+    if days_ago > 0:
+        qs = qs.by_days_ago(days_ago=days_ago)
+        
+    if days_left > 0:
+        qs = qs.by_days_left(days_left=days_left)
+    
+    if days_start > 0 and days_end > 0:
+        qs = qs.by_days_range(days_start=days_start, days_end=days_end)
     
     complete_count = 0
     qs_count = qs.count()
