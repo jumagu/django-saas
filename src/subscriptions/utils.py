@@ -5,10 +5,10 @@ from subscriptions.models import Subscription, UserSubscription, SubscriptionSta
 def refresh_active_users_subscriptions(
     user_ids=None,
     active_only=True,
-    days_left=0,
-    days_ago=0,
-    days_start=0,
-    days_end=0,
+    days_left=-1,
+    days_ago=-1,
+    days_start=-1,
+    days_end=-1,
     verbose=False,
 ):
     qs = UserSubscription.objects.all()
@@ -19,14 +19,18 @@ def refresh_active_users_subscriptions(
     if user_ids is not None:
         qs = qs.by_user_ids(user_ids=user_ids)
     
-    if days_ago > 0:
+    if days_ago > -1:
         qs = qs.by_days_ago(days_ago=days_ago)
         
-    if days_left > 0:
+    if days_left > -1:
         qs = qs.by_days_left(days_left=days_left)
     
-    if days_start > 0 and days_end > 0:
-        qs = qs.by_days_range(days_start=days_start, days_end=days_end)
+    if days_start > -1 and days_end > -1:
+        qs = qs.by_days_range(
+            days_start=days_start,
+            days_end=days_end,
+            verbose=verbose
+        )
     
     complete_count = 0
     qs_count = qs.count()
