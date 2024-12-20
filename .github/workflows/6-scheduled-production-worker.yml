@@ -1,4 +1,4 @@
-name: 4 - Test Django with Actions Secret Database URL
+name: 6 - Schedule a Production Worker
 
 on:
   workflow_dispatch:
