@@ -7,8 +7,11 @@
       <ul class="menu menu-horizontal px-1">
         <li><a href="{% url 'pricing' %}">Pricing</a></li>
         {% if request.user.is_authenticated %}
+        <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
         <li><a href="{% url 'account_logout' %}">Logout</a></li>
         {% else %}
+        <li><a href="#">Services</a></li>
+        <li><a href="#">Contact</a></li>
         <li><a href="{% url 'account_signup' %}">Sign Up</a></li>
         <li><a href="{% url 'account_login' %}">Login</a></li>
         {% endif %}
