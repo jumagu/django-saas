@@ -1,21 +1,39 @@
-{% extends 'base.html' %}
+{% extends 'dashboard/base.html' %}
 
-{% block title %}{{ page_title }} - {{ block.super }}{% endblock title %}
+{% block title %}Subscription details - {{ block.super }}{% endblock title %}
 
 {% block content %}
-<h1 class="text-2xl">Your subscription</h1>
+<section>
+  <h1 class="text-3xl mb-2 font-semibold">Your subscription</h1>
 
-<!-- synchronizes the current details in db with those in stripe -->
-<form action="" method="POST">
-  {% csrf_token %}
-  <button type="submit" class="btn btn-primary">Refresh</button>
-</form>
+  <p class="text-lg">
+    <span class="font-bold">Plan name:</span> {{ subscription.plan_name | title }}
+  </p>
+  <p class="text-lg">
+    <span class="font-bold">Status:</span> {{ subscription.status }}
+  </p>
+  <p class="text-lg">
+    <span class="font-bold">Membership age:</span>
+    {{ subscription.original_period_start | timesince }}
+  </p>
+  <p class="text-lg">
+    <span class="font-bold">Start:</span> {{ subscription.current_period_start | date:'F j Y' }}
+  </p>
+  <p class="text-lg">
+    <span class="font-bold">End:</span>
+    {{ subscription.current_period_end | timeuntil }}
+    ({{ subscription.current_period_end | date:'F j Y' }})
+  </p>
 
-<a href="{{ subscription.get_cancel_url }}" class="btn btn-error">Cancel membership</a>
-
-<p>Plan name: {{ subscription.plan_name|title }}</p>
-<p>Status: {{ subscription.status }}</p>
-<p>Membership age: {{ subscription.original_period_start|timesince }}</p>
-<p>Start: {{ subscription.current_period_start }}</p>
-<p>End: {{ subscription.current_period_end|timeuntil }} ({{ subscription.current_period_end }})</p>
+  <div class="flex gap-2 mt-2">
+    <form action="" method="POST">
+      {% csrf_token %}
+      <!-- synchronizes the current details in db with those in stripe -->
+      <button type="submit" class="btn btn-primary">Refresh</button>
+    </form>
+    <a href="{{ subscription.get_cancel_url }}" class="btn btn-error">
+      Cancel membership
+    </a>
+  </div>
+</section>
 {% endblock content %}
