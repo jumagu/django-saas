@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}SaaS{% endblock title %}</title>
+    {% include 'base/css.html' %}
+  </head>
+  <body>
+    <div class="drawer lg:drawer-open">
+      <input id="my-drawer" type="checkbox" class="drawer-toggle" />
+      <div class="drawer-content">
+        <div class="flex-1 flex flex-col">
+            {% include 'dashboard/navbar.html' %}
+            {% include 'base/messages.html' with messages=messages %}
+            <main class="p-4">
+                {% block content %}
+                {% endblock content %}
+            </main>
+        </div>
+      </div>
+      <div class="drawer-side z-[2]">
+        <label
+          for="my-drawer"
+          class="drawer-overlay"
+          aria-label="close sidebar"
+        ></label>
+        {% include 'dashboard/sidebar.html' %}
+      </div>
+    </div>
+  </body>
+</html>
