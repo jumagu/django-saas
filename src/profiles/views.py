@@ -29,9 +29,8 @@ def profile_detail_view(request, username=None, *args, **kwargs):
     is_me = profile_user_obj == user
     
     context = {
-        'object': profile_user_obj,
-        'instance': profile_user_obj,
         'owner': is_me,
+        'instance': profile_user_obj,
     }
     
     return render(request, 'profiles/detail.html', context)
