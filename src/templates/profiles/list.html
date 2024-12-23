@@ -1,27 +1,52 @@
-{% extends 'base.html' %}
+{% extends 'dashboard/base.html' %}
 
 {% block title %}
     Users - {{ block.super }}
 {% endblock title %}
 
 {% block content %}
-  <h1 class="text-lg font-semibold">Users</h1>
-
-  <div>
-    {% if perms.auth %}
-        {% if perms.auth.view_user %}
-            <ul>
+<section>
+    <h1 class="text-2xl font-semibold">Users</h1>
+    <div class="divider"></div>
+    {% if perms.auth and perms.auth.view_user %}
+        <div class="overflow-x-auto">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Date Joined</th>
+                        <th>Last Login</th>
+                    </tr>
+                </thead>
+                <tbody>
                 {% for instance in object_list %}
-                <li>
-                    <a href="/profiles/{{ instance.username }}">
-                        {{ instance.username }}
-                    </a>
-                </li>
+                    <tr class="hover">
+                        <th>{{ forloop.counter }}</th>
+                        <td>{{ instance.last_name | default:'----' }}</td>
+                        <td>{{ instance.first_name | default:'----'}}</td>
+                        <td>
+                            <a href="/profiles/{{ instance.username }}" class="hover:underline">
+                                {{ instance.username }}
+                            </a>
+                        </td>
+                        <td>{{ instance.email }}</td>
+                        <td>{{ instance.date_joined | date }}</td>
+                        <td>{{ instance.last_login }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">There are no users.</td>
+                    </tr>
                 {% endfor %}
-            </ul>
-        {% else %}
-            <div>You are not allowed to see this.</div>
-        {% endif %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="text-lg">You are not allowed to see this.</div>
     {% endif %}
-  </div>
+</section>
 {% endblock content %}

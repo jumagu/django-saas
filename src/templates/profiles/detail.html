@@ -1,20 +1,28 @@
-{% extends 'base.html' %}
+{% extends 'dashboard/base.html' %}
 
 {% block title %}
-    Users - {{ block.super }}
+    User Profile - {{ block.super }}
 {% endblock title %}
 
 {% block content %}
-  <h1 class="text-lg font-semibold">{{ instance.username  }}</h1>
-
-  <div>
-    {% if perms.auth or owner %}
-        {% if perms.auth.view_user or owner %}
-            <span>{{ instance.first_name }} {{ instance.last_name }}</span>
-            <span class="block">{{ instance.last_login }}</span>
-        {% else %}
-            <div>You are not allowed to see this.</div>
-        {% endif %}
-    {% endif %}
-  </div>
+  <section>
+    <h1 class="text-2xl font-semibold">
+      User profile of: <span class="text-primary">{{ instance.username  }}</span>
+    </h1>
+    <div class="divider"></div>
+    <div>
+      {% if perms.auth.view_user or owner %}
+        <p>
+          Full name:
+          {{ instance.first_name | default:'---' }}
+          {{ instance.last_name | default:'---' }}
+        </p>
+        <p>Email: {{ instance.email }}</p>
+        <p>Joined in {{ instance.date_joined | date:'F Y' }}</p>
+        <p>Last login: {{ instance.last_login }}</p>
+      {% else %}
+        <div class="text-lg">You are not allowed to see this.</div>
+      {% endif %}
+    </div>
+  </section>
 {% endblock content %}
