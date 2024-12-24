@@ -7,22 +7,22 @@
   <h1 class="text-3xl mb-2 font-semibold">Your subscription</h1>
 
   <p class="text-lg">
-    <span class="font-bold">Plan name:</span> {{ subscription.plan_name | title }}
+    <span class="font-bold">Plan name:</span> {{ subscription.plan_name | default:'no active subscription' | title }}
   </p>
   <p class="text-lg">
-    <span class="font-bold">Status:</span> {{ subscription.status }}
+    <span class="font-bold">Status:</span> {{ subscription.status | default:'n/a' }}
   </p>
   <p class="text-lg">
     <span class="font-bold">Membership age:</span>
-    {{ subscription.original_period_start | timesince }}
+    {{ subscription.original_period_start | timesince | default:'n/a' }}
   </p>
   <p class="text-lg">
-    <span class="font-bold">Start:</span> {{ subscription.current_period_start | date:'F j Y' }}
+    <span class="font-bold">Start:</span> {{ subscription.current_period_start | date:'F j Y' | default:'n/a' }}
   </p>
   <p class="text-lg">
     <span class="font-bold">End:</span>
-    {{ subscription.current_period_end | timeuntil }}
-    ({{ subscription.current_period_end | date:'F j Y' }})
+    {{ subscription.current_period_end | timeuntil | default:'n/a' }}
+    ({{ subscription.current_period_end | date:'F j Y' | default:'n/a' }})
   </p>
 
   <div class="flex gap-2 mt-2">
