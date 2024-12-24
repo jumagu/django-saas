@@ -9,10 +9,10 @@
   <body>
     {% include 'nav/navbar.html' %}
     {% include 'base/messages.html' with messages=messages %}
-    <main class="container mx-auto px-4">
+    <main>
       {% block content %}
       {% endblock content %}
     </main>
-    {% include 'base/js.html' %}
+    {% include 'footer/footer.html' %}
   </body>
 </html>
