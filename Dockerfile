@@ -1,7 +1,23 @@
-# Set the python version as a build-time argument
-# with Python 3.12 as the default
-ARG PYTHON_VERSION=3.12-slim-bullseye
-FROM python:${PYTHON_VERSION}
+FROM ubuntu:22.04
+
+# Install os dependencies for our mini vm
+RUN apt-get update && apt-get install -y \
+    # for node
+    nodejs \
+    npm \
+    #for python
+    python3 \
+    python3-pip \
+    # for postgres
+    libpq-dev \
+    # for Pillow
+    libjpeg-dev \
+    # for CairoSVG
+    libcairo2 \
+    # other
+    gcc \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create a virtual environment
 RUN python -m venv /opt/venv
@@ -15,21 +31,6 @@ RUN pip install --upgrade pip
 # Set Python-related environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-
-# Install os dependencies for our mini vm
-RUN apt-get update && apt-get install -y \
-    # for node
-    nodejs \
-    npm \
-    # for postgres
-    libpq-dev \
-    # for Pillow
-    libjpeg-dev \
-    # for CairoSVG
-    libcairo2 \
-    # other
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
 
 # Create the mini vm's code directory
 RUN mkdir -p /code
