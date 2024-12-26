@@ -1,7 +1,7 @@
 {
   "scripts": {
     "tailwind:dev": "tailwindcss -i src/staticfiles/tw/tailwind_input.css -o src/staticfiles/vendors/tailwind_output.css --watch",
-    "tailwind:build": "tailwindcss -i src/staticfiles/tw/tailwind_input.css -o src/staticfiles/vendors/tailwind_output.css --build --minify"
+    "tailwind:build": "tailwindcss -i code/src/staticfiles/tw/tailwind_input.css -o code/src/staticfiles/vendors/tailwind_output.css --build --minify"
   },
   "devDependencies": {
     "daisyui": "^4.12.22",
