@@ -3,6 +3,10 @@
 ARG PYTHON_VERSION=3.12-slim-bullseye
 FROM python:${PYTHON_VERSION}
 
+# Set the node version as a build-time argument
+ARG NODE_VERSION=22.12.0
+FROM node:${NODE_VERSION}
+
 # Create a virtual environment
 RUN python -m venv /opt/venv
 
@@ -40,8 +44,15 @@ COPY requirements.txt /tmp/requirements.txt
 # copy the project code into the container's working directory
 COPY ./src /code
 
+# Copy the package.json and tailwind.config.js files into the container's working directory 
+COPY tailwind.config.js /code
+COPY package.json /code
+
 # Install the Python project requirements
 RUN pip install -r /tmp/requirements.txt
+
+# Install node_modules
+RUN npm install
 
 ARG DJANGO_SECRET_KEY
 ENV DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
@@ -52,7 +63,8 @@ ENV DJANGO_DEBUG=${DJANGO_DEBUG}
 # database isn't available during build
 # run any other commands that do not need the database
 # such as:
-RUN python manage.py vendor_pull
+# RUN python manage.py vendor_pull
+RUN npm run tailwind:build
 RUN python manage.py collectstatic --noinput
 # whitenoise -> s3
 
