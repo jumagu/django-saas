@@ -3,7 +3,7 @@
     <div class="flex-1">
       <a href="{% url 'home' %}" class="btn btn-ghost text-xl">SAAS</a>
     </div>
-    <div class="flex-none">
+    <div class="flex-none flex flex-row-reverse md:flex-row gap-2 md:gap-0.5">
       {% include 'nav/nav_menu.html' with class_name='menu menu-horizontal px-1 hidden md:flex' %}
       <div class="dropdown dropdown-end">
         <div
@@ -28,6 +28,7 @@
         </div>
         {% include 'nav/nav_menu.html' with class_name='menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow' %}
       </div>
+      {% include 'snippets/theme_toggle.html' %}
     </div>
   </nav>
 </header>
