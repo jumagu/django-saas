@@ -53,7 +53,8 @@ RUN npm ci
 COPY ./src /code
 
 # Build Tailwind CSS
-RUN ls -la /code/src/staticfiles/tw/ && npm run tailwind:build
+RUN ls
+RUN ls -la /src/staticfiles/tw/ && npm run tailwind:build
 
 # Static files collection
 RUN python manage.py collectstatic --noinput
