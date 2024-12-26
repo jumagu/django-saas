@@ -45,6 +45,7 @@ COPY ./src /code
 
 # Copy the package.json and tailwind.config.js files into the container's working directory 
 COPY tailwind.config.js /code
+COPY package-lock.json /code
 COPY package.json /code
 
 # Install the Python project requirements
