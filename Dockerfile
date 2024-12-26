@@ -18,8 +18,9 @@ ENV PYTHONUNBUFFERED 1
 
 # Install os dependencies for our mini vm
 RUN apt-get update && apt-get install -y \
-    # for node.js
+    # for node
     nodejs \
+    npm \
     # for postgres
     libpq-dev \
     # for Pillow
