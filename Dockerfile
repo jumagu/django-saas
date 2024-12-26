@@ -3,10 +3,6 @@
 ARG PYTHON_VERSION=3.12-slim-bullseye
 FROM python:${PYTHON_VERSION}
 
-# Set the node version as a build-time argument
-ARG NODE_VERSION=22.12.0
-FROM node:${NODE_VERSION}
-
 # Create a virtual environment
 RUN python -m venv /opt/venv
 
@@ -22,6 +18,8 @@ ENV PYTHONUNBUFFERED 1
 
 # Install os dependencies for our mini vm
 RUN apt-get update && apt-get install -y \
+    # for node.js
+    nodejs \
     # for postgres
     libpq-dev \
     # for Pillow
