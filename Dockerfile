@@ -45,18 +45,18 @@ COPY requirements.txt /tmp/requirements.txt
 # Copy Node.js dependencies
 COPY package.json package-lock.json /code/
 
-# Install Python and Node.js dependencies
-RUN pip install -r /tmp/requirements.txt
-RUN npm ci
+# Copy Tailwind Config file
+COPY tailwind.config.js /code
 
 # Copy the application code
 COPY ./src /code/src
 
+# Install Python and Node.js dependencies
+RUN pip install -r /tmp/requirements.txt
+RUN npm ci
+
 # Build Tailwind CSS
 RUN npm run tailwind:build
-
-# Static files collection
-RUN cd ./src && python manage.py collectstatic --noinput
 
 # Set environment variables for Django
 ARG DJANGO_SECRET_KEY
@@ -64,6 +64,9 @@ ENV DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
 
 ARG DJANGO_DEBUG=0
 ENV DJANGO_DEBUG=${DJANGO_DEBUG}
+
+# Static files collection
+RUN cd ./src && python manage.py collectstatic --noinput
 
 # Set the default project name
 ARG PROJ_NAME="home"
