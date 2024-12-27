@@ -50,7 +50,7 @@ RUN pip install -r /tmp/requirements.txt
 RUN npm ci
 
 # Copy the application code
-COPY /src /code
+COPY src /code
 
 # Build Tailwind CSS
 RUN ls
