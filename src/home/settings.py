@@ -49,17 +49,20 @@ DEBUG = config('DJANGO_DEBUG', cast=bool)
 BASE_URL = config('BASE_URL', default=None)
 
 ALLOWED_HOSTS = [
-    '.railway.app', # https://saas.prod.railway.app
+    'django-saas-prod.up.railway.app',
 ]
 if DEBUG:
     ALLOWED_HOSTS += [
         '127.0.0.1',
         'localhost',
+        'django-saas-prod.up.railway.app',
     ]
 
+CSRF_TRUSTED_ORIGINS = ['https://django-saas-prod.up.railway.app']
+CSRF_ALLOWED_ORIGINS = ['https://django-saas-prod.up.railway.app']
+CORS_ORIGINS_WHITELIST = ['https://django-saas-prod.up.railway.app']
 
 # Application definition
-
 INSTALLED_APPS = [
     # django-apps
     'django.contrib.admin',
