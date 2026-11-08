@@ -1,0 +1,13 @@
+# Slippers components (https://mitchel.me/slippers/registering-components/).
+# Slippers only reads the first components.yaml found in the template directories.
+#
+# To add a component, map a tag name to its template, for example:
+#   card: "components/card.html"
+# and load the `slippers` tag library in the templates that use it.
+#
+# Note: Slippers loads this file as a Django template, so don't write Django
+# template tags or variables in these comments.
+#
+# The allauth-ui components (container, form, form_field) are registered by
+# allauth-ui in its own `allauth_ui` tag library, so they are not listed here.
+components: {}
