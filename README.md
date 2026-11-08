@@ -106,9 +106,19 @@ While working on templates, run `npm run tailwind:dev` from the project root in 
 
 ## Setting up plans
 
+To create the default plans (Starter, Pro, and Enterprise), run:
+
+```bash
+python manage.py setup_plans
+```
+
+It reuses the products and prices that already exist in the Stripe test account, so nothing new is created in Stripe. It also creates a group for each plan and syncs its permissions. It is safe to run more than once, and it stops without changes if a price doesn't match what is in Stripe.
+
+To create other plans by hand:
+
 1. Go to the admin (`/admin/`) and create a **Subscription** (a plan). Saving it creates the matching product in Stripe.
 2. Add one or more **Subscription prices** to the plan (monthly or yearly). Each one creates a price in Stripe. Only prices marked as *featured* appear on `/pricing/`.
-3. To restrict features by plan, assign groups and permissions (`basic`, `pro`, `advanced`, `basic_ai`) to the plan, then run:
+3. Assign at least one group and one permission (`basic`, `pro`, `advanced`, `basic_ai`) to the plan (the admin requires both), then run:
 
    ```bash
    python manage.py sync_permissions
@@ -131,6 +141,7 @@ Run them from `src/`:
 
 | Command | Description |
 | --- | --- |
+| `python manage.py setup_plans` | Creates the default plans, their prices, and groups using the existing Stripe products and prices. See [Setting up plans](#setting-up-plans). |
 | `python manage.py sync_permissions` | Copies each active plan's permissions to its groups. |
 | `python manage.py sync_user_subs` | Refreshes active user subscriptions from Stripe. Accepts `--days-left`, `--days-ago`, `--days-start`, and `--days-end` to filter by period end date. |
 | `python manage.py sync_user_subs --clear-dangling` | Cancels active Stripe subscriptions that don't belong to any user subscription in the database. |
