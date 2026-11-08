@@ -13,7 +13,7 @@ jobs:
       DJANGO_DEBUG: 0
       NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
       NEON_PROJECT_ID: ${{ secrets.NEON_PROJECT_ID }}
-      NEON_PROD_BRANCH: 'main'
+      NEON_PROD_BRANCH: 'production'
       NEON_GITHUB_BRANCH: 'gh-delete'
     steps:
       - name: Checkout Code
