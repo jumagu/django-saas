@@ -182,6 +182,15 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+# GitHub login credentials come from the environment instead of a Social application in the database
+GITHUB_CLIENT_ID = config('GITHUB_CLIENT_ID', default='')
+GITHUB_CLIENT_SECRET = config('GITHUB_CLIENT_SECRET', default='')
+if GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET:
+    SOCIALACCOUNT_PROVIDERS['github']['APP'] = {
+        'client_id': GITHUB_CLIENT_ID,
+        'secret': GITHUB_CLIENT_SECRET,
+    }
+
 # Django AllAuth Theme
 ALLAUTH_UI_THEME = 'dark'
 

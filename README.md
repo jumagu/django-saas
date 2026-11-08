@@ -88,6 +88,8 @@ While working on templates, run `npm run tailwind:dev` from the project root in 
 | `STRIPE_SECRET_KEY` | Yes | Stripe secret key. Plans, prices, and customers are created in Stripe when they are saved. |
 | `STRIPE_TEST_OVERRIDE` | No | Set to `1` to allow a `sk_test_` key when `DJANGO_DEBUG=0`. Without it, a test key in production raises an error. |
 | `DATABASE_URL` | No | PostgreSQL connection string. If it is not set, SQLite (`src/db.sqlite3`) is used. |
+| `GITHUB_CLIENT_ID` | No | Client ID of the GitHub OAuth App. See [GitHub login](#github-login-optional). |
+| `GITHUB_CLIENT_SECRET` | No | Client secret of the GitHub OAuth App. |
 | `CONN_MAX_AGE` | No | Database connection lifetime in seconds. Default: `300`. |
 | `EMAIL_HOST` | Yes* | SMTP host. Default: `smtp.gmail.com`. |
 | `EMAIL_PORT` | Yes* | SMTP port. Default: `587`. |
@@ -118,7 +120,10 @@ Users can only check out after confirming their email, because that is when thei
 
 ## GitHub login (optional)
 
-Create an OAuth App in GitHub with the callback URL `http://localhost:8000/accounts/github/login/callback/`. Then, in the Django admin, add a **Social application** with provider *GitHub* and the app's client ID and secret.
+1. Create an OAuth App in GitHub (*Settings → Developer settings → OAuth Apps*) with the callback URL `http://localhost:8000/accounts/github/login/callback/`. An OAuth App accepts a single callback domain, so production needs its own app with `https://<your-domain>/accounts/github/login/callback/`.
+2. Set the app's client ID and secret as `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`, then restart the server.
+
+If either variable is missing, the GitHub button is not shown. Don't also add a GitHub **Social application** in the Django admin: allauth fails if the same provider is configured in both places.
 
 ## Management commands
 
