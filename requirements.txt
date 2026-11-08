@@ -7,6 +7,7 @@ requests==2.32.5
 whitenoise==6.8.2
 django-allauth[socialaccount]==65.3.1
 django-allauth-ui==1.5.3
+django-anymail==15.2
 django-widget-tweaks==1.5.0
 slippers==0.6.2
 stripe==11.4.1

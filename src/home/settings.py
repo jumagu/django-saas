@@ -24,6 +24,21 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER', cast=str, default=None)
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', cast=str, default=None)
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool, default=True)
 EMAIL_USE_SSL = config('EMAIL_USE_SSL', cast=bool, default=False)
+EMAIL_TIMEOUT = 10 # Fail fast instead of blocking the worker if the mail server doesn't answer
+
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='') or EMAIL_HOST_USER or 'webmaster@localhost'
+SERVER_EMAIL = DEFAULT_FROM_EMAIL # Sender of the error emails sent to ADMINS
+
+# Railway blocks outbound SMTP on the Hobby plan, so when BREVO_API_KEY is set
+# emails are sent through Brevo's HTTPS API instead. DEFAULT_FROM_EMAIL must be
+# a sender verified in Brevo.
+BREVO_API_KEY = config('BREVO_API_KEY', default='')
+if BREVO_API_KEY:
+    EMAIL_BACKEND = 'anymail.backends.brevo.EmailBackend'
+    ANYMAIL = {
+        'BREVO_API_KEY': BREVO_API_KEY,
+        'REQUESTS_TIMEOUT': 10,
+    }
 
 # 500 errors
 ADMIN_USER_NAME = config('ADMIN_USER_NAME', default='Admin user')
@@ -88,6 +103,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.github',
+    'anymail',
     'widget_tweaks',
     'slippers',
 ]

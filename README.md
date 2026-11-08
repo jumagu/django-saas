@@ -23,7 +23,7 @@ A Django SaaS boilerplate with user accounts, Stripe subscriptions, and plan-bas
 - Python 3.12 (Django 5.0 supports Python 3.10 to 3.12, and 3.12 is the version used by the Dockerfile and CI)
 - Node.js 20+ and npm (to build the CSS)
 - A Stripe account (test keys are fine for local development)
-- An SMTP account to send verification emails (for example, Gmail with an app password)
+- An SMTP account to send verification emails locally (for example, Gmail with an app password), and a [Brevo](https://www.brevo.com/) account for production (see [Sending emails in production](#sending-emails-in-production))
 
 ## Installation
 
@@ -97,12 +97,24 @@ While working on templates, run `npm run tailwind:dev` from the project root in 
 | `EMAIL_HOST_PASSWORD` | Yes* | SMTP password or app password. |
 | `EMAIL_USE_TLS` | No | Default: `True`. |
 | `EMAIL_USE_SSL` | No | Default: `False`. |
+| `DEFAULT_FROM_EMAIL` | No | Sender of the app's emails, optionally with a name (`SaaS <you@example.com>`). Default: `EMAIL_HOST_USER`. With Brevo, it must be a verified sender. |
+| `BREVO_API_KEY` | No | If set, emails are sent through Brevo's API instead of SMTP. Required on Railway's Hobby plan. |
 | `ADMIN_USER_NAME` | No | Name of the admin who receives server error (500) emails. |
 | `ADMIN_USER_EMAIL` | No | Email of that admin. Error emails are only sent if it is set. |
 
-\* Sign-up requires email verification, so without a working SMTP configuration users cannot register.
+\* Sign-up requires email verification, so without a working email configuration (SMTP or Brevo) users cannot register.
 
 `STRIPE_PUBLIC_KEY` and `DJANGO_VERSION` appear in `.env.example` but are not read by the code yet.
+
+## Sending emails in production
+
+Railway blocks outbound SMTP on the Hobby plan, so production sends emails (sign-up verification, password reset) through [Brevo](https://www.brevo.com/)'s HTTPS API with [django-anymail](https://anymail.dev/):
+
+1. Create a free Brevo account and verify the address you want to send from as a sender.
+2. Create an API key in Brevo.
+3. In Railway, set `BREVO_API_KEY` and set `DEFAULT_FROM_EMAIL` to the verified sender.
+
+Locally, leave `BREVO_API_KEY` empty to keep using SMTP.
 
 ## Setting up plans
 
