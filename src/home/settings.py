@@ -62,6 +62,11 @@ CSRF_TRUSTED_ORIGINS = ['https://django-saas-prod.up.railway.app']
 CSRF_ALLOWED_ORIGINS = ['https://django-saas-prod.up.railway.app']
 CORS_ORIGINS_WHITELIST = ['https://django-saas-prod.up.railway.app']
 
+# Railway terminates HTTPS at its proxy and forwards the original scheme in X-Forwarded-Proto.
+# Without this, Django treats every request as http and builds http:// URLs
+# (e.g. the GitHub OAuth callback and the email confirmation links).
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 # Application definition
 INSTALLED_APPS = [
     # django-apps
