@@ -131,6 +131,8 @@ def cancel_subscription(
 
 def get_checkout_customer_plan(session_id):
     checkout_res = get_checkout_session(stripe_id=session_id, raw=True)
+    if checkout_res.status != 'complete' or not checkout_res.subscription:
+        return None
     customer_id = checkout_res.customer
     sub_stripe_id = checkout_res.subscription
     sub_res = get_subscription(sub_stripe_id, raw=True)
