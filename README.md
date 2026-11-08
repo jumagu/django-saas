@@ -1,13 +1,29 @@
 # SaaS Project
 
-This is a SaaS (Software as a Service) boilerplate.
+A Django SaaS boilerplate with user accounts, Stripe subscriptions, and plan-based permissions.
 
 ## Features
 
-- User authentication and authorization
-- Subscription management
-- Payment integration with Stripe
-- Admin dashboard
+- Sign-up and login with [django-allauth](https://docs.allauth.org/) (username or email, optional GitHub login, mandatory email verification)
+- Subscription plans and prices managed from the Django admin and synced to Stripe
+- Stripe Checkout for subscribing, plus billing pages to view, refresh, and cancel a plan
+- Plan-based access control through Django groups and permissions
+- Landing page, pricing page, and user dashboard styled with Tailwind CSS and DaisyUI (light/dark theme)
+
+## Tech stack
+
+- Python / Django 5.0
+- PostgreSQL ([Neon](https://neon.tech/)) in production, SQLite for local development
+- Stripe
+- Tailwind CSS 3 + DaisyUI
+- Docker, deployed on [Railway](https://railway.app/)
+
+## Requirements
+
+- Python 3.12 (Django 5.0 supports Python 3.10 to 3.12, and 3.12 is the version used by the Dockerfile and CI)
+- Node.js 20+ and npm (to build the CSS)
+- A Stripe account (test keys are fine for local development)
+- An SMTP account to send verification emails (for example, Gmail with an app password)
 
 ## Installation
 
@@ -25,30 +41,111 @@ This is a SaaS (Software as a Service) boilerplate.
    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
    ```
 
-3. Install the dependencies:
+3. Install the Python and Node.js dependencies:
 
    ```bash
    pip install -r requirements.txt
+   npm install
    ```
 
-4. Apply migrations:
+4. Create your `.env` file in the project root and fill it in (see [Environment variables](#environment-variables)):
 
    ```bash
+   cp .env.example .env
+   ```
+
+   > **Important:** if you want to use SQLite locally, delete or comment out the `DATABASE_URL` line. An empty `DATABASE_URL=""` makes Django fail with `ImproperlyConfigured`.
+
+5. Build the CSS:
+
+   ```bash
+   npm run tailwind:build
+   ```
+
+6. Apply migrations and create a superuser. Django commands run from the `src/` directory:
+
+   ```bash
+   cd src
    python manage.py migrate
-   ```
-
-5. Create a superuser:
-
-   ```bash
    python manage.py createsuperuser
    ```
 
-6. Run the development server:
+7. Run the development server:
+
    ```bash
    python manage.py runserver
    ```
 
+While working on templates, run `npm run tailwind:dev` from the project root in a second terminal to rebuild the CSS on every change.
+
+## Environment variables
+
+| Variable | Required | Description |
+| --- | --- | --- |
+| `DJANGO_SECRET_KEY` | Yes | Django secret key. |
+| `DJANGO_DEBUG` | Yes | `1` for development, `0` for production. |
+| `BASE_URL` | Yes | Public URL of the app, without a trailing slash (`http://localhost:8000` locally). Used to build the Stripe Checkout return URLs. |
+| `STRIPE_SECRET_KEY` | Yes | Stripe secret key. Plans, prices, and customers are created in Stripe when they are saved. |
+| `STRIPE_TEST_OVERRIDE` | No | Set to `1` to allow a `sk_test_` key when `DJANGO_DEBUG=0`. Without it, a test key in production raises an error. |
+| `DATABASE_URL` | No | PostgreSQL connection string. If it is not set, SQLite (`src/db.sqlite3`) is used. |
+| `CONN_MAX_AGE` | No | Database connection lifetime in seconds. Default: `300`. |
+| `EMAIL_HOST` | Yes* | SMTP host. Default: `smtp.gmail.com`. |
+| `EMAIL_PORT` | Yes* | SMTP port. Default: `587`. |
+| `EMAIL_HOST_USER` | Yes* | SMTP user. |
+| `EMAIL_HOST_PASSWORD` | Yes* | SMTP password or app password. |
+| `EMAIL_USE_TLS` | No | Default: `True`. |
+| `EMAIL_USE_SSL` | No | Default: `False`. |
+| `ADMIN_USER_NAME` | No | Name of the admin who receives server error (500) emails. |
+| `ADMIN_USER_EMAIL` | No | Email of that admin. Error emails are only sent if it is set. |
+
+\* Sign-up requires email verification, so without a working SMTP configuration users cannot register.
+
+`STRIPE_PUBLIC_KEY` and `DJANGO_VERSION` appear in `.env.example` but are not read by the code yet.
+
+## Setting up plans
+
+1. Go to the admin (`/admin/`) and create a **Subscription** (a plan). Saving it creates the matching product in Stripe.
+2. Add one or more **Subscription prices** to the plan (monthly or yearly). Each one creates a price in Stripe. Only prices marked as *featured* appear on `/pricing/`.
+3. To restrict features by plan, assign groups and permissions (`basic`, `pro`, `advanced`, `basic_ai`) to the plan, then run:
+
+   ```bash
+   python manage.py sync_permissions
+   ```
+
+   When a user subscribes, they are added to the plan's groups, so you can check access with `user.has_perm('subscriptions.pro')`.
+
+Users can only check out after confirming their email, because that is when their Stripe customer is created.
+
+## GitHub login (optional)
+
+Create an OAuth App in GitHub with the callback URL `http://localhost:8000/accounts/github/login/callback/`. Then, in the Django admin, add a **Social application** with provider *GitHub* and the app's client ID and secret.
+
+## Management commands
+
+Run them from `src/`:
+
+| Command | Description |
+| --- | --- |
+| `python manage.py sync_permissions` | Copies each active plan's permissions to its groups. |
+| `python manage.py sync_user_subs` | Refreshes active user subscriptions from Stripe. Accepts `--days-left`, `--days-ago`, `--days-start`, and `--days-end` to filter by period end date. |
+| `python manage.py sync_user_subs --clear-dangling` | Cancels active Stripe subscriptions that don't belong to any user subscription in the database. |
+| `python manage.py vendor_pull` | Downloads third-party static files into `src/staticfiles/vendors`. |
+
+## Deployment
+
+The app is deployed to Railway using the `Dockerfile`. The container builds the CSS, collects static files, runs migrations on startup, and serves the app with Gunicorn. Set the environment variables above in Railway.
+
+GitHub Actions workflows in `.github/workflows`:
+
+- **5 - Branch Neon DB for Django Tests**: on every push to `master`, creates a temporary Neon branch from `production` and runs the test suite against it.
+- **6 - Schedule a Production Worker**: syncs subscriptions with Stripe twice a day, and clears dangling subscriptions on the 1st of each month.
+
+Both need the repository secrets `NEON_API_KEY` and `NEON_PROJECT_ID`. Workflow 6 also needs `STRIPE_SECRET_KEY`.
+
 ## Usage
 
-- Access the App at `http://127.0.0.1:8000/`
-- Access the admin dashboard at `http://127.0.0.1:8000/admin/`
+- App: `http://127.0.0.1:8000/`
+- Pricing: `http://127.0.0.1:8000/pricing/`
+- Dashboard: `http://127.0.0.1:8000/dashboard/`
+- Billing: `http://127.0.0.1:8000/accounts/billing/`
+- Admin: `http://127.0.0.1:8000/admin/`

@@ -1,4 +1,5 @@
 {
+  "name": "django-saas",
   "private": true,
   "scripts": {
     "tailwind:dev": "tailwindcss -i src/staticfiles/tw/tailwind_input.css -o src/staticfiles/vendors/tailwind_output.css --watch",
