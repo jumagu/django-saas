@@ -1,6 +1,6 @@
 # Set the Python version as a build-time argument 
 # with Python 3.12 as the default
-ARG PYTHON_VERSION=3.12-slim-bullseye
+ARG PYTHON_VERSION=3.12-slim-bookworm
 FROM python:${PYTHON_VERSION}
 
 # Create a virtual environment
